@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack "
+    "build": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js"
   },
   "keywords": [
     "3D",
@@ -20,14 +20,21 @@
     "buffer": "^6.0.3",
     "cesium": "^1.106.1",
     "color": "^4.2.3",
-    "copy-webpack-plugin": "^11.0.0",
-    "html-webpack-plugin": "^5.5.3",
     "https-browserify": "^1.0.0",
     "stream-http": "^3.2.0",
     "url": "^0.11.1"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.5.3",
+    "resolve-url-loader": "^5.0.0",
+    "sass-loader": "^13.3.2",
+    "strip-pragma-loader": "^1.0.1",
+    "style-loader": "^3.3.3",
+    "url-loader": "^4.1.1",
     "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   }
 }

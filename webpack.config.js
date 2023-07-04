@@ -3,17 +3,24 @@ const path = require("path")
 const webpack = require("webpack")
 const cesiumSource = "node_modules/cesium/Source"
 const cesiumWorkers = "../Build/Cesium/Workers"
+const CopywebpackPlugin = require("copy-webpack-plugin")
 
-const CopyWebpackPlugin = require("copy-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   mode: "development",
+  context: __dirname,
   entry: "./src/index.js",
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
+    sourcePrefix: "",
   },
+  amd: {
+    // Enable webpack-friendly use of require in Cesium
+    toUrlUndefined: true,
+  },
+
   resolve: {
     fallback: {
       zlib: require.resolve("browserify-zlib"),
@@ -25,21 +32,46 @@ module.exports = {
       stream: false,
       url: false,
     },
+    alias: {
+      // CesiumJS module name
+      cesium: path.resolve(__dirname, cesiumSource),
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        // Strip cesium pragmas
+        test: /\.js$/,
+        enforce: "pre",
+        include: path.resolve(__dirname, cesiumSource),
+        use: [
+          {
+            loader: "strip-pragma-loader",
+            options: {
+              pragmas: {
+                debug: false,
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
-    new CopyWebpackPlugin({
+    new CopywebpackPlugin({
       patterns: [
         { from: path.join(cesiumSource, cesiumWorkers), to: "Workers" },
         { from: path.join(cesiumSource, "Assets"), to: "Assets" },
         { from: path.join(cesiumSource, "Widgets"), to: "Widgets" },
-        { from: path.join(cesiumSource, "ThirdParty"), to: "ThirdParty" },
       ],
     }),
-
-    new webpack.DefinePlugin({
-      // Define relative base path in cesium for loading assets
-
-      CESIUM_BASE_URL: JSON.stringify(""),
-    }),
   ],
+  devServer: {
+    contentBase: path.join(__dirname, "dist"),
+  },
+  devtool: "eval",
 }
